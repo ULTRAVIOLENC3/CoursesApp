@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -46,18 +49,19 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.auth)
+    implementation(projects.feature.main)
+    implementation(projects.feature.bookmarks)
+    implementation(projects.feature.profile)
+
+    implementation(projects.core.designsystem)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.ui)
-
     implementation(libs.androidx.navigation.compose)
-
-    // Modules
-
-    // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
-
-
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
 }

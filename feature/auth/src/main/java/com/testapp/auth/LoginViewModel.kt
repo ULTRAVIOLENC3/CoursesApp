@@ -1,6 +1,5 @@
 package com.testapp.auth
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -14,12 +13,11 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     val uiState: StateFlow<LoginUiState> = _uiState
 
     fun onEmailChange(newEmail: String) {
-        val isValidEmail = Patterns.EMAIL_ADDRESS.matcher(uiState.value.email).matches()
+        val allowedEmailCharsRegex = "[a-zA-Z0-9@._-]".toRegex()
+        val emailFiltered = allowedEmailCharsRegex.findAll(newEmail).joinToString("") { it.value }
 
-        if (isValidEmail) {
-            _uiState.update { it.copy(email = newEmail) }
-            validateInput()
-        }
+        _uiState.update { it.copy(email = emailFiltered) }
+        validateInput()
     }
 
     fun onPasswordChange(newPassword: String) {

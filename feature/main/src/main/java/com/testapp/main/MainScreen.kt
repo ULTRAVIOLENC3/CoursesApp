@@ -15,18 +15,20 @@
     import androidx.compose.foundation.layout.width
     import androidx.compose.foundation.lazy.LazyColumn
     import androidx.compose.foundation.lazy.items
+    import androidx.compose.foundation.lazy.rememberLazyListState
     import androidx.compose.foundation.shape.RoundedCornerShape
     import androidx.compose.foundation.text.KeyboardOptions
     import androidx.compose.material3.Button
     import androidx.compose.material3.ButtonColors
-    import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.Icon
     import androidx.compose.material3.MaterialTheme
     import androidx.compose.material3.Scaffold
     import androidx.compose.material3.Text
     import androidx.compose.material3.TextField
     import androidx.compose.material3.TextFieldDefaults
+    import androidx.compose.material3.ripple
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.remember
     import androidx.compose.ui.Alignment
@@ -40,42 +42,54 @@
     import androidx.compose.ui.unit.dp
     import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
     import androidx.lifecycle.compose.collectAsStateWithLifecycle
+    import com.testapp.designsystem.R
     import com.testapp.designsystem.theme.CoursesAppTheme
     import com.testapp.designsystem.theme.Typography
-    import com.testapp.model.CourseItem
+    import com.testapp.model.Course
     import com.testapp.ui.CourseCard
 
 
     @Composable
     internal fun MainRoute(
+        modifier: Modifier = Modifier,
         viewModel: MainViewModel = hiltViewModel(),
-        onCourseDetailsClick: () -> Unit,
-        modifier: Modifier = Modifier
+        onCourseDetailsClick: (Int) -> Unit,
     ) {
 
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         MainScreen(
             uiState = uiState,
-
+            modifier = modifier,
+            onCourseDetailsClick = { courseId -> onCourseDetailsClick(courseId) },
+            onBookmarkClicked = { course -> viewModel.toggleBookmark(course) },
+            onSortClicked = { viewModel.toggleSortOrder() }
         )
     }
-
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     internal fun MainScreen(
         uiState: MainUiState,
-
+        onCourseDetailsClick: (Int) -> Unit,
+        modifier: Modifier = Modifier,
+        onBookmarkClicked: (Course) -> Unit,
+        onSortClicked: () -> Unit
     ) {
+        val listState = rememberLazyListState()
+
+        LaunchedEffect(uiState.sortAscending) {
+            listState.animateScrollToItem(0)
+        }
+
+
         Scaffold() { innerPadding ->
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
                 horizontalAlignment = Alignment.Start,
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp)
-                    .padding(top = 56.dp),
+                    .padding(top = 16.dp),
             )
             {
                 Row(
@@ -106,7 +120,7 @@
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                         leadingIcon = {
                             Icon(
-                                painter = painterResource(com.testapp.designsystem.R.drawable.ic_search),
+                                painter = painterResource(R.drawable.ic_search),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onPrimary
                                 ) },
@@ -124,7 +138,7 @@
                         ),
                         content = {
                             Icon(
-                                painter = painterResource(com.testapp.designsystem.R.drawable.ic_filter),
+                                painter = painterResource(R.drawable.ic_filter),
                                 contentDescription = "Filter",
                                 modifier = Modifier.size(26.dp),
                             ) },
@@ -144,18 +158,19 @@
                         modifier = Modifier
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) {  }
+                                indication = ripple(),
+                            ) { onSortClicked() }
                     )
                     Spacer(Modifier.width(4.dp))
                     Icon(
-                        painter = painterResource(com.testapp.designsystem.R.drawable.ic_arrow_down_up),
+                        painter = painterResource(R.drawable.ic_arrow_down_up),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }
 
                 LazyColumn(
+                    state = listState,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -165,8 +180,8 @@
                     ) { course ->
                         CourseCard(
                             course = course,
-                            onDetailsClick = { },
-                            onBookmarkClick = { },
+                            onDetailsClick = { onCourseDetailsClick(course.id) },
+                            onBookmarkClick = { onBookmarkClicked(course) },
                             modifier = Modifier.height(236.dp)
                         )
                     }
@@ -181,7 +196,7 @@
         CoursesAppTheme {
             MainScreen(
                 uiState = MainUiState(List(5) { intex ->
-                    CourseItem(
+                    Course(
                         id = intex,
                         rate = "4.9",
                         price = "999",
@@ -191,10 +206,15 @@
                                 "фреймворки Spring и Maven, работу с базами данных и API. " +
                                 "Создайте свой собственный проект, собрав портфолио и став" +
                                 " востребованным специалистом для любой IT компании.",
-                        hasLike = true
+                        hasLike = true,
+                        publishDate = ""
                     )
                 }
                 ),
-                )
+                onCourseDetailsClick = {},
+                onBookmarkClicked = {},
+                modifier = Modifier,
+                onSortClicked = {}
+            )
         }
     }

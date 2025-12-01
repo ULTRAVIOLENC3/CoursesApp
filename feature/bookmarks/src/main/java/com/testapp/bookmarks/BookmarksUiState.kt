@@ -1,7 +1,7 @@
 package com.testapp.bookmarks
 
-import com.testapp.model.CourseItem
+import com.testapp.model.Course
 
 data class BookmarksUiState(
-    val courses: List<CourseItem> = emptyList()
+    val courses: List<Course> = emptyList()
 )

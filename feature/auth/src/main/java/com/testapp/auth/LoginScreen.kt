@@ -22,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,8 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -43,11 +46,10 @@ import com.testapp.designsystem.theme.Typography
 
 @Composable
 internal fun LoginRoute(
+    modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LoginScreen(
@@ -55,10 +57,9 @@ internal fun LoginRoute(
         onLoginClick = { onLoginClick() },
         onSignUpClick = {},
         onForgetPasswordClick = {},
-        onVkClicked = { },
-        onOkClicked = { },
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
+        modifier = modifier
     )
 }
 
@@ -66,19 +67,22 @@ internal fun LoginRoute(
 @Composable
 internal fun LoginScreen(
     uiState: LoginUiState,
+    modifier: Modifier = Modifier,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     onForgetPasswordClick: () -> Unit,
-    onVkClicked: () -> Unit,
-    onOkClicked: () -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
 ) {
+    val uriHandler = LocalUriHandler.current
+    val vkUrl = "https://vk.com/"
+    val okUrl = "https://ok.ru/"
+
     Scaffold() { innerPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
             horizontalAlignment = Alignment.Start,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
@@ -132,6 +136,7 @@ internal fun LoginScreen(
                         modifier = Modifier.alpha(0.5f),
                     ) },
                 singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
                 textStyle = Typography.bodyMedium,
                 shape = RoundedCornerShape(30.dp),
                 colors = TextFieldDefaults.colors(
@@ -171,7 +176,7 @@ internal fun LoginScreen(
                     modifier = Modifier
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = null
+                            indication = ripple()
                         ) { onSignUpClick() }
                 )
             }
@@ -183,7 +188,7 @@ internal fun LoginScreen(
                     .align(Alignment.CenterHorizontally)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null
+                        indication = ripple()
                     ) { onForgetPasswordClick() }
             )
             Spacer(Modifier.size(24.dp))
@@ -195,23 +200,23 @@ internal fun LoginScreen(
             )
 
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             )
             {
                 SocialsButtonComponent(
-                    onClick = onVkClicked,
+                    onClick ={ uriHandler.openUri(vkUrl) },
                     colors = Brush.verticalGradient(listOf(Color(0xFF2683ED), Color(0xFF2683ED))),
                     iconRes = R.drawable.ic_vk,
                     iconWidthDp = 26.dp,
                     iconHeightDp = 16.dp,
-                    modifier = Modifier.size(156.dp, 40.dp)
+                    modifier = Modifier.weight(1f),
                 )
                 SocialsButtonComponent(
-                    onClick = onOkClicked,
+                    onClick = { uriHandler.openUri(okUrl) },
                     colors = Brush.verticalGradient(listOf(Color(0xFFF98509), Color(0xFFF95D00))),
                     iconRes = R.drawable.ic_ok,
-                    modifier = Modifier.size(156.dp, 40.dp),
+                    modifier = Modifier.weight(1f),
                     iconWidthDp = 15.3.dp,
                     iconHeightDp = 26.dp,
                 )
@@ -228,8 +233,6 @@ fun AuthScreenPreview() {
             onLoginClick = {},
             onSignUpClick = {},
             onForgetPasswordClick = {},
-            onVkClicked = {},
-            onOkClicked = {},
             uiState = LoginUiState(),
             onEmailChange = {},
             onPasswordChange = {}

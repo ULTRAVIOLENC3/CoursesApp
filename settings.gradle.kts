@@ -20,6 +20,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "CoursesApp"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 include(":feature:auth")
 include(":feature:main")
@@ -31,3 +33,4 @@ include(":core:model")
 include(":feature:profile")
 include(":feature:bookmarks")
 include(":core:ui")
+include(":core:database")

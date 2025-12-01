@@ -43,11 +43,10 @@ android {
 }
 
 dependencies {
-    // Modules
-    implementation(project(":core:ui"))
-    implementation(project(":core:model"))
-    implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
+    implementation(projects.core.ui)
+    implementation(projects.core.model)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.data)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.ui)
@@ -56,8 +55,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.compose.foundation.layout)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
-    // DI (Hilt)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)

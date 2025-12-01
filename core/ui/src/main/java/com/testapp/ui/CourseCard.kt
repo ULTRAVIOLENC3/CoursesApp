@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,14 +34,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.testapp.designsystem.R
 import com.testapp.designsystem.theme.CoursesAppTheme
 import com.testapp.designsystem.theme.Typography
-import com.testapp.model.CourseItem
+import com.testapp.model.Course
 
 @Composable
 fun CourseCard(
     modifier: Modifier = Modifier,
-    course: CourseItem,
+    course: Course,
     onDetailsClick: () -> Unit,
     onBookmarkClick: () -> Unit,
 
@@ -59,7 +61,7 @@ fun CourseCard(
                 .clip(RoundedCornerShape(12.dp))
         ) {
             Image(
-                painter = painterResource(com.testapp.designsystem.R.drawable.img_test),
+                painter = painterResource(R.drawable.img_test),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -69,11 +71,11 @@ fun CourseCard(
             val bookmarkTint: Color
 
             if(course.hasLike) {
-                bookmarkIcon = com.testapp.designsystem.R.drawable.ic_bookmark_fill
+                bookmarkIcon = R.drawable.ic_bookmark_fill
                 bookmarkTint = MaterialTheme.colorScheme.primary
             } else
             {
-                bookmarkIcon = com.testapp.designsystem.R.drawable.ic_bookmark
+                bookmarkIcon = R.drawable.ic_bookmark
                 bookmarkTint = MaterialTheme.colorScheme.onPrimary
             }
 
@@ -117,7 +119,7 @@ fun CourseCard(
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
                     ) {
                         Icon(
-                            painter = painterResource(com.testapp.designsystem.R.drawable.ic_star),
+                            painter = painterResource(R.drawable.ic_star),
                             tint = MaterialTheme.colorScheme.primary,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
@@ -190,11 +192,11 @@ fun CourseCard(
                         modifier = Modifier
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
-                                indication = null
+                                indication = ripple()
                             ) { onDetailsClick() }
                     )
                     Icon(
-                        painter = painterResource(com.testapp.designsystem.R.drawable.ic_arrow_right_short_fill),
+                        painter = painterResource(R.drawable.ic_arrow_right_short_fill),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -212,7 +214,7 @@ private fun CourseItemComponentPreview() {
         CourseCard(
             onDetailsClick = {},
             onBookmarkClick = {},
-            course = CourseItem(
+            course = Course(
                 rate = "4.9",
                 price = "999",
                 startDate = "22 мая 2024",
@@ -221,7 +223,9 @@ private fun CourseItemComponentPreview() {
                         "фреймворки Spring и Maven, работу с базами данных и API. " +
                         "Создайте свой собственный проект, собрав портфолио и став" +
                         " востребованным специалистом для любой IT компании.",
-                hasLike = true
+                hasLike = true,
+                id = 1,
+                publishDate = ""
             )
         )
     }
